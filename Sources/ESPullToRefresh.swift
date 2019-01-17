@@ -105,8 +105,9 @@ public extension ES where Base: UIScrollView {
     }
     
     /// Manual refresh
-    public func startPullToRefresh() {
+    public func startPullToRefresh(ignoreCallback: Bool = false) {
         DispatchQueue.main.async { [weak base] in
+            base?.header?.ignoreCallback = ignoreCallback
             base?.header?.startRefreshing(isAuto: false)
         }
     }
@@ -198,6 +199,7 @@ open class ESRefreshHeaderView: ESRefreshComponent {
     fileprivate var previousOffset: CGFloat = 0.0
     fileprivate var scrollViewInsets: UIEdgeInsets = UIEdgeInsets.zero
     fileprivate var scrollViewBounces: Bool = true
+    fileprivate var ignoreCallback: Bool = false
 
     open var lastRefreshTimestamp: TimeInterval?
     open var refreshIdentifier: String?
@@ -302,7 +304,12 @@ open class ESRefreshHeaderView: ESRefreshComponent {
         UIView.animate(withDuration: 0.2, delay: 0.0, options: .curveLinear, animations: {
             scrollView.contentOffset.y = -insets.top
         }, completion: { (finished) in
-            self.handler?()
+            if !self.ignoreCallback {
+                self.handler?()
+            } else {
+                self.ignoreCallback = false
+            }
+            
             // un-ignore observer
             self.ignoreObserver(false)
             scrollView.bounces = self.scrollViewBounces
