@@ -91,7 +91,7 @@ fileprivate class ESRefreshImpacter {
     static private var impacter: AnyObject? = {
         if #available(iOS 10.0, *) {
             if NSClassFromString("UIFeedbackGenerator") != nil {
-                let generator = UIImpactFeedbackGenerator.init(style: .light)
+                let generator = UIImpactFeedbackGenerator.init(style: .medium)
                 generator.prepare()
                 return generator
             }
